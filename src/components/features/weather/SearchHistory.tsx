@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/Button";
 import { Clock } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface SearchHistoryProps {
   history: string[];
@@ -14,6 +15,14 @@ export function SearchHistory({
   onSelect,
   isLoading = false,
 }: SearchHistoryProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   if (history.length === 0) {
     return null;
   }

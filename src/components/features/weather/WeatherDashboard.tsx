@@ -10,8 +10,17 @@ import { SearchHistory } from "./SearchHistory";
 import { CurrentWeather } from "./CurrentWeather";
 import { ForecastWeather } from "./ForecastWeather";
 import { TemperatureUnitToggle } from "./TemperatureUnitToggle";
+import { PopularCities } from "./PopularCities";
+import { Button } from "@/components/ui/Button";
+import { Home as HomeIcon } from "lucide-react";
 
-export function WeatherDashboard() {
+interface WeatherDashboardProps {
+  showPopularCities?: boolean;
+}
+
+export function WeatherDashboard({
+  showPopularCities = false,
+}: WeatherDashboardProps) {
   const [searchCity, setSearchCity] = useState<string | null>(null);
   const dispatch = useDispatch();
 
@@ -19,7 +28,7 @@ export function WeatherDashboard() {
     (state: RootState) => state.weather
   );
 
-  const { weatherData, forecastData, refetch, isLoading, error } =
+  const { weatherData, forecastData, isLoading, error, refetch } =
     useWeatherData(searchCity);
 
   const handleSearch = (city: string, force: boolean = false) => {
@@ -28,6 +37,10 @@ export function WeatherDashboard() {
     } else {
       setSearchCity(city);
     }
+  };
+
+  const handleGoHome = () => {
+    setSearchCity(null);
   };
 
   const handleToggleUnit = () => {
@@ -68,20 +81,36 @@ export function WeatherDashboard() {
         </div>
       )}
 
-      {(weatherData || isLoading) && (
-        <div className="space-y-6">
-          <CurrentWeather
-            data={weatherData || null}
-            isLoading={isLoading}
-            temperatureUnit={temperatureUnit}
-          />
+      {weatherData ? (
+        <>
+          <div className="mb-4">
+            <Button
+              variant="ghost"
+              onClick={handleGoHome}
+              className="flex items-center gap-2"
+            >
+              <HomeIcon className="h-4 w-4" />
+              Back to Home
+            </Button>
+          </div>
 
-          <ForecastWeather
-            data={forecastData || null}
-            isLoading={isLoading}
-            temperatureUnit={temperatureUnit}
-          />
-        </div>
+          <div className="space-y-6">
+            <CurrentWeather
+              data={weatherData}
+              isLoading={isLoading}
+              temperatureUnit={temperatureUnit}
+            />
+
+            <ForecastWeather
+              data={forecastData}
+              isLoading={isLoading}
+              temperatureUnit={temperatureUnit}
+            />
+          </div>
+        </>
+      ) : (
+        showPopularCities &&
+        !isLoading && <PopularCities onSelectCity={handleSearch} />
       )}
     </div>
   );
