@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import Image from "next/image";
 import { Droplets, Wind } from "lucide-react";
+import { getWeatherBackground } from "@/utils/weatherBackgrounds";
 
 interface CurrentWeatherProps {
   data: WeatherData | null;
@@ -26,14 +27,18 @@ export function CurrentWeather({
     return null;
   }
 
+  const { gradient } = getWeatherBackground(data.condition);
+
   const temperature =
     temperatureUnit === "celsius"
-      ? `${data.temperature.celsius}°C`
-      : `${data.temperature.fahrenheit}°F`;
+      ? `${Math.round(data.temperature.celsius)}°C`
+      : `${Math.round(data.temperature.fahrenheit)}°F`;
 
   return (
     <Card className="w-full overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+      <CardHeader
+        className={`bg-gradient-to-r ${gradient} text-white weather-transition`}
+      >
         <div className="flex justify-between items-center">
           <div>
             <CardTitle className="text-2xl">{data.city}</CardTitle>
@@ -55,17 +60,19 @@ export function CurrentWeather({
           <div className="flex items-center">
             {data.conditionIcon && (
               <div className="mr-2">
-                <Image
-                  src={data.conditionIcon}
-                  alt={data.condition}
-                  width={64}
-                  height={64}
-                  className="h-16 w-16"
-                />
+                <div className="weather-icon-transition">
+                  <Image
+                    src={data.conditionIcon}
+                    alt={data.condition}
+                    width={64}
+                    height={64}
+                    className="h-16 w-16"
+                  />
+                </div>
               </div>
             )}
             <div>
-              <h3 className="font-medium">{data.condition}</h3>
+              <h3 className="font-medium text-gray-700">{data.condition}</h3>
               <p className="text-sm text-gray-500">
                 {new Date(data.timestamp).toLocaleString()}
               </p>

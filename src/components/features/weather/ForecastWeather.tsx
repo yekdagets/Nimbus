@@ -4,6 +4,7 @@ import { ForecastData, TemperatureUnit } from "@/types/weather";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
 import Image from "next/image";
+import { getWeatherBackground } from "@/utils/weatherBackgrounds";
 
 interface ForecastWeatherProps {
   data: ForecastData | null;
@@ -32,15 +33,17 @@ export function ForecastWeather({
       <CardContent>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           {data.days.map((day) => {
+            const { gradient } = getWeatherBackground(day.condition);
+
             const minTemp =
               temperatureUnit === "celsius"
-                ? `${day.temperature.celsius.min}°C`
-                : `${day.temperature.fahrenheit.min}°F`;
+                ? `${Math.round(day.temperature.celsius.min)}°C`
+                : `${Math.round(day.temperature.fahrenheit.min)}°F`;
 
             const maxTemp =
               temperatureUnit === "celsius"
-                ? `${day.temperature.celsius.max}°C`
-                : `${day.temperature.fahrenheit.max}°F`;
+                ? `${Math.round(day.temperature.celsius.max)}°C`
+                : `${Math.round(day.temperature.fahrenheit.max)}°F`;
 
             const date = new Date(day.date);
             const dayName = new Intl.DateTimeFormat("en-US", {
@@ -54,27 +57,37 @@ export function ForecastWeather({
             return (
               <div
                 key={day.date}
-                className="flex flex-col items-center p-3 rounded-lg border border-gray-100 bg-white shadow-sm"
+                className="flex flex-col items-center rounded-lg border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
               >
-                <div className="font-medium">{dayName}</div>
-                <div className="text-sm text-gray-500">{formattedDate}</div>
+                <div
+                  className={`w-full bg-gradient-to-r ${gradient} p-2 text-center weather-transition text-white`}
+                >
+                  <div className="font-medium">{dayName}</div>
+                  <div className="text-sm opacity-80">{formattedDate}</div>
+                </div>
 
-                {day.conditionIcon && (
-                  <Image
-                    src={day.conditionIcon}
-                    alt={day.condition}
-                    width={50}
-                    height={50}
-                    className="my-2"
-                  />
-                )}
+                <div className="p-3 bg-white flex flex-col items-center">
+                  {day.conditionIcon && (
+                    <div className="weather-icon-transition">
+                      <Image
+                        src={day.conditionIcon}
+                        alt={day.condition}
+                        width={50}
+                        height={50}
+                        className="my-2"
+                      />
+                    </div>
+                  )}
 
-                <div className="text-sm font-medium">{day.condition}</div>
+                  <div className="text-sm font-medium text-gray-700">
+                    {day.condition}
+                  </div>
 
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-blue-600">{minTemp}</span>
-                  <span className="text-gray-400">|</span>
-                  <span className="text-red-500">{maxTemp}</span>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-blue-600">{minTemp}</span>
+                    <span className="text-gray-400">|</span>
+                    <span className="text-red-500">{maxTemp}</span>
+                  </div>
                 </div>
               </div>
             );
@@ -96,7 +109,7 @@ function ForecastWeatherSkeleton() {
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="flex flex-col items-center p-3 rounded-lg border border-gray-100"
+              className="flex flex-col items-center rounded-lg border border-gray-100"
             >
               <Skeleton className="h-5 w-20" />
               <Skeleton className="h-4 w-16 mt-1" />
