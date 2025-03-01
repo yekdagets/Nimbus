@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/redux/store";
-import { toggleTemperatureUnit } from "@/store/redux/weatherSlice";
+import {
+  toggleTemperatureUnit,
+  addToSearchHistory,
+  setRefreshCity,
+} from "@/store/redux/weatherSlice";
 import { useWeatherData } from "@/hooks/useWeather";
 import { SearchBar } from "./SearchBar";
 import { SearchHistory } from "./SearchHistory";
@@ -13,39 +16,60 @@ import { TemperatureUnitToggle } from "./TemperatureUnitToggle";
 import { PopularCities } from "./PopularCities";
 import { Button } from "@/components/ui/Button";
 import { Home as HomeIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { formatCityName } from "@/utils/helpers";
 
 interface WeatherDashboardProps {
-  showPopularCities?: boolean;
+  initialSearchCity?: string | null;
+  initialWeatherData?: any;
+  initialForecastData?: any;
 }
 
 export function WeatherDashboard({
-  showPopularCities = false,
+  initialSearchCity = null,
+  initialWeatherData = null,
+  initialForecastData = null,
 }: WeatherDashboardProps) {
-  const [searchCity, setSearchCity] = useState<string | null>(null);
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const { searchHistory, temperatureUnit } = useSelector(
     (state: RootState) => state.weather
   );
 
+  const initialData =
+    initialWeatherData && initialForecastData
+      ? { current: initialWeatherData, forecast: initialForecastData }
+      : null;
+
   const { weatherData, forecastData, isLoading, error, refetch } =
-    useWeatherData(searchCity);
+    useWeatherData(initialSearchCity, initialData);
 
   const handleSearch = (city: string, force: boolean = false) => {
-    if (force && city === searchCity) {
+    const formattedCity = formatCityName(city);
+
+    dispatch(addToSearchHistory(formattedCity));
+
+    if (formattedCity === initialSearchCity) {
       refetch();
     } else {
-      setSearchCity(city);
+      if (force) {
+        dispatch(setRefreshCity(formattedCity));
+      }
+
+      router.push(`/weather/${formattedCity}`);
     }
   };
 
   const handleGoHome = () => {
-    setSearchCity(null);
+    router.push("/");
   };
 
   const handleToggleUnit = () => {
     dispatch(toggleTemperatureUnit());
   };
+
+  const showPopularCities = !initialSearchCity && !weatherData;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -59,6 +83,7 @@ export function WeatherDashboard({
           <SearchBar
             onSearch={(city) => handleSearch(city)}
             isLoading={isLoading}
+            currentCity={initialSearchCity}
           />
           <SearchHistory
             history={searchHistory}

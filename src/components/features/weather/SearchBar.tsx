@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Search } from "lucide-react";
@@ -8,10 +8,23 @@ import { Search } from "lucide-react";
 interface SearchBarProps {
   onSearch: (city: string) => void;
   isLoading?: boolean;
+  currentCity?: string | null;
 }
 
-export function SearchBar({ onSearch, isLoading = false }: SearchBarProps) {
+export function SearchBar({
+  onSearch,
+  isLoading = false,
+  currentCity = null,
+}: SearchBarProps) {
   const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (currentCity === null) {
+      setQuery("");
+    } else if (currentCity) {
+      setQuery(currentCity);
+    }
+  }, [currentCity]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();

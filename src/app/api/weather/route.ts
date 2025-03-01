@@ -1,5 +1,5 @@
+import { fetchWeatherData } from "@/lib/api";
 import { NextResponse } from "next/server";
-import { fetchWeatherData, fetchForecastData } from "@/lib/api";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -13,15 +13,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [weatherData, forecastData] = await Promise.all([
-      fetchWeatherData(city),
-      fetchForecastData(city),
-    ]);
+    const data = await fetchWeatherData(city);
 
-    return NextResponse.json({
-      current: weatherData,
-      forecast: forecastData,
-    });
+    return NextResponse.json(data);
   } catch (error) {
     console.error("API error:", error);
     return NextResponse.json(

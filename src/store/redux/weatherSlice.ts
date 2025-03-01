@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WeatherData, ForecastData, TemperatureUnit } from "@/types/weather";
+import { formatCityName } from "@/utils/helpers";
 
 interface WeatherState {
   currentWeather: WeatherData | null;
@@ -8,6 +9,7 @@ interface WeatherState {
   isLoading: boolean;
   error: string | null;
   temperatureUnit: TemperatureUnit;
+  refreshCity: string | null;
 }
 
 const initialState: WeatherState = {
@@ -17,6 +19,7 @@ const initialState: WeatherState = {
   isLoading: false,
   error: null,
   temperatureUnit: "celsius",
+  refreshCity: null,
 };
 
 if (typeof window !== "undefined") {
@@ -44,11 +47,13 @@ export const weatherSlice = createSlice({
     },
     addToSearchHistory: (state, action: PayloadAction<string>) => {
       const city = action.payload;
+      const formattedCity = formatCityName(city);
+
       const filteredHistory = state.searchHistory.filter(
-        (item) => item.toLowerCase() !== city.toLowerCase()
+        (item) => item !== formattedCity
       );
 
-      state.searchHistory = [city, ...filteredHistory].slice(0, 5);
+      state.searchHistory = [formattedCity, ...filteredHistory].slice(0, 5);
 
       if (typeof window !== "undefined") {
         localStorage.setItem(
@@ -56,6 +61,9 @@ export const weatherSlice = createSlice({
           JSON.stringify(state.searchHistory)
         );
       }
+    },
+    setRefreshCity: (state, action: PayloadAction<string | null>) => {
+      state.refreshCity = action.payload;
     },
     setIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
@@ -80,6 +88,7 @@ export const {
   addToSearchHistory,
   setIsLoading,
   setError,
+  setRefreshCity,
   toggleTemperatureUnit,
 } = weatherSlice.actions;
 
