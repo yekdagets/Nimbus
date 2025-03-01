@@ -79,29 +79,20 @@ export function processForecastData(
   };
 }
 
-function capitalizeFirstLetter(text: string): string {
-  const firstLetter = text.charAt(0);
-
-  const firstLetterCap = firstLetter.toUpperCase();
-
-  const remainingLetters = text.slice(1);
-
-  return firstLetterCap + remainingLetters;
-}
-
 function normalizeText(text: string): string {
   if (!text) return "";
 
   return text
-    .toLowerCase()
-    .replace(/ç/g, "c")
-    .replace(/ğ/g, "g")
-    .replace(/ı/g, "i")
-    .replace(/ö/g, "o")
-    .replace(/ş/g, "s")
-    .replace(/ü/g, "u");
+    .replace(/ç/gi, "c")
+    .replace(/ğ/gi, "g")
+    .replace(/ı/gi, "i")
+    .replace(/İ/gi, "I")
+    .replace(/ö/gi, "o")
+    .replace(/ş/gi, "s")
+    .replace(/ü/gi, "u");
 }
 
 export function formatCityName(city: string): string {
-  return capitalizeFirstLetter(normalizeText(city));
+  const normalized = normalizeText(city);
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1).toLowerCase();
 }
