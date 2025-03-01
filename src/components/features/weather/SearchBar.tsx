@@ -22,7 +22,7 @@ export const SearchBar = memo(function SearchBar({
     if (currentCity === null) {
       setQuery("");
     } else if (currentCity) {
-      setQuery(currentCity);
+      setQuery(decodeURIComponent(currentCity));
     }
   }, [currentCity]);
 

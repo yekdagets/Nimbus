@@ -17,6 +17,7 @@ export function PopularCities({ onSelectCity }: PopularCitiesProps) {
 
   useEffect(() => {
     handleUseLocation(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUseLocation = (autoRedirect: boolean = true) => {

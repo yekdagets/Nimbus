@@ -11,14 +11,20 @@ export async function generateStaticParams() {
 
 export const revalidate = 3600;
 
-export default async function WeatherPage({
-  params,
-}: {
-  params: { city: string };
-}) {
+type Props = {
+  params: {
+    city: string;
+  };
+  searchParams: Record<string, string | string[] | undefined>;
+};
+
+export default async function WeatherPage({ params }: Props) {
   try {
-    const city = params.city;
-    const formattedCity = formatCityName(city);
+    const { city } = await Promise.resolve(params);
+
+    const decodedCity = decodeURIComponent(city);
+    const formattedCity = formatCityName(decodedCity);
+
     const weatherData = await fetchWeatherData(formattedCity);
 
     return (

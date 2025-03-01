@@ -39,3 +39,28 @@ export type TemperatureUnit = "celsius" | "fahrenheit";
 export interface WeatherError {
   message: string;
 }
+
+export interface OpenWeatherForecastItem {
+  dt: number;
+  main: {
+    temp_min: number;
+    temp_max: number;
+  };
+  weather: Array<{
+    main: string;
+    icon: string;
+  }>;
+}
+
+export interface OpenWeatherCurrentResponse {
+  name: string;
+  sys: { country: string };
+  main: { temp: number; humidity: number; temp_min: number; temp_max: number };
+  weather: Array<{ main: string; icon: string }>;
+  wind: { speed: number };
+}
+
+export interface OpenWeatherForecastResponse {
+  city: { name: string; country: string };
+  list: OpenWeatherForecastItem[];
+}

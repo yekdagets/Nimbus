@@ -19,11 +19,12 @@ import { PopularCities } from "./PopularCities";
 import { Button } from "@/components/ui/Button";
 import { formatCityName } from "@/utils/helpers";
 import { Home as HomeIcon } from "lucide-react";
+import { ForecastData, WeatherData } from "@/types/weather";
 
 interface WeatherDashboardProps {
   initialSearchCity?: string | null;
-  initialWeatherData?: any;
-  initialForecastData?: any;
+  initialWeatherData?: WeatherData | null;
+  initialForecastData?: ForecastData | null;
 }
 
 export function WeatherDashboard({
@@ -59,7 +60,7 @@ export function WeatherDashboard({
           dispatch(setRefreshCity(formattedCity));
         }
 
-        router.push(`/weather/${formattedCity}`);
+        router.push(`/weather/${encodeURIComponent(formattedCity)}`);
       }
     },
     [dispatch, initialSearchCity, refetch, router]

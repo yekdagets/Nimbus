@@ -1,6 +1,15 @@
-import { WeatherData, ForecastData, ForecastDay } from "@/types/weather";
+import {
+  WeatherData,
+  ForecastData,
+  ForecastDay,
+  OpenWeatherCurrentResponse,
+  OpenWeatherForecastResponse,
+  OpenWeatherForecastItem,
+} from "@/types/weather";
 
-export function processWeatherData(data: any): WeatherData {
+export function processWeatherData(
+  data: OpenWeatherCurrentResponse
+): WeatherData {
   return {
     city: data.name,
     country: data.sys.country,
@@ -16,10 +25,12 @@ export function processWeatherData(data: any): WeatherData {
   };
 }
 
-export function processForecastData(data: any): ForecastData {
+export function processForecastData(
+  data: OpenWeatherForecastResponse
+): ForecastData {
   const dailyData: { [key: string]: ForecastDay } = {};
 
-  data.list.forEach((item: any) => {
+  data.list.forEach((item: OpenWeatherForecastItem) => {
     const date = new Date(item.dt * 1000).toISOString().split("T")[0];
 
     if (!dailyData[date]) {
