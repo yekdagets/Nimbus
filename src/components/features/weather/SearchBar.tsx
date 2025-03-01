@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, memo } from "react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Search } from "lucide-react";
@@ -11,7 +11,7 @@ interface SearchBarProps {
   currentCity?: string | null;
 }
 
-export function SearchBar({
+export const SearchBar = memo(function SearchBar({
   onSearch,
   isLoading = false,
   currentCity = null,
@@ -54,4 +54,4 @@ export function SearchBar({
       </Button>
     </form>
   );
-}
+});

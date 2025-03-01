@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -36,8 +36,13 @@ export function useWeatherData(
   const [initialDataState] = useState(initialData);
   const forceRefresh = city && refreshCity === city;
 
+  const queryKey = useMemo(
+    () => ["weather", city ? formatCityName(city) : null],
+    [city]
+  );
+
   const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
-    queryKey: ["weather", city ? formatCityName(city) : null],
+    queryKey: ["weather", queryKey],
     queryFn: () => fetchWeatherData(city!),
     enabled: !!city && (forceRefresh || !initialDataState),
     gcTime: 1000 * 60 * 10,

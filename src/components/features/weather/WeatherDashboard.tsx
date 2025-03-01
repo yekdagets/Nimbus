@@ -1,6 +1,8 @@
 "use client";
 
+import { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 import { RootState } from "@/store/redux/store";
 import {
   toggleTemperatureUnit,
@@ -15,9 +17,8 @@ import { ForecastWeather } from "./ForecastWeather";
 import { TemperatureUnitToggle } from "./TemperatureUnitToggle";
 import { PopularCities } from "./PopularCities";
 import { Button } from "@/components/ui/Button";
-import { Home as HomeIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { formatCityName } from "@/utils/helpers";
+import { Home as HomeIcon } from "lucide-react";
 
 interface WeatherDashboardProps {
   initialSearchCity?: string | null;
@@ -45,29 +46,32 @@ export function WeatherDashboard({
   const { weatherData, forecastData, isLoading, error, refetch } =
     useWeatherData(initialSearchCity, initialData);
 
-  const handleSearch = (city: string, force: boolean = false) => {
-    const formattedCity = formatCityName(city);
+  const handleSearch = useCallback(
+    (city: string, force: boolean = false) => {
+      const formattedCity = formatCityName(city);
 
-    dispatch(addToSearchHistory(formattedCity));
+      dispatch(addToSearchHistory(formattedCity));
 
-    if (formattedCity === initialSearchCity) {
-      refetch();
-    } else {
-      if (force) {
-        dispatch(setRefreshCity(formattedCity));
+      if (formattedCity === initialSearchCity) {
+        refetch();
+      } else {
+        if (force) {
+          dispatch(setRefreshCity(formattedCity));
+        }
+
+        router.push(`/weather/${formattedCity}`);
       }
+    },
+    [dispatch, initialSearchCity, refetch, router]
+  );
 
-      router.push(`/weather/${formattedCity}`);
-    }
-  };
-
-  const handleGoHome = () => {
+  const handleGoHome = useCallback(() => {
     router.push("/");
-  };
+  }, [router]);
 
-  const handleToggleUnit = () => {
+  const handleToggleUnit = useCallback(() => {
     dispatch(toggleTemperatureUnit());
-  };
+  }, [dispatch]);
 
   const showPopularCities = !initialSearchCity && !weatherData;
 

@@ -1,8 +1,8 @@
 "use client";
 
+import { memo, useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Clock } from "lucide-react";
-import { useEffect, useState } from "react";
 
 interface SearchHistoryProps {
   history: string[];
@@ -10,7 +10,7 @@ interface SearchHistoryProps {
   isLoading?: boolean;
 }
 
-export function SearchHistory({
+export const SearchHistory = memo(function SearchHistory({
   history,
   onSelect,
   isLoading = false,
@@ -48,4 +48,4 @@ export function SearchHistory({
       </div>
     </div>
   );
-}
+});
